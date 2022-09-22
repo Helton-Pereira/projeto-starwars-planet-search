@@ -5,33 +5,59 @@ import fetchPlanets from '../services';
 
 function SWProvider({ children }) {
   const [planets, setPlanets] = useState([]);
-  const [search, setSearch] = useState();
-  const [filtered, setFiltered] = useState([]);
+  const [filteredPlanets, setFilteredPlanets] = useState([]);
+  const [filterByNumericValues, setFilterByNumericValues] = useState(
+    { column: 'population', comparison: 'maior que', value: 0 },
+  );
 
   const getPlanets = async () => {
     try {
       const apiPlanets = await fetchPlanets();
       setPlanets(apiPlanets);
-      setFiltered(apiPlanets);
+      setFilteredPlanets(apiPlanets);
     } catch (error) {
       return (error.message);
     }
   };
 
   const handleSearch = ({ target: { value } }) => {
-    setSearch(value);
-    const filteredPlanets = planets.filter(
+    const filteredResults = planets.filter(
       (planet) => planet.name.toLowerCase().includes(value.toLowerCase()),
     );
-    setFiltered(filteredPlanets);
+    setFilteredPlanets(filteredResults);
+  };
+
+  const handleChange = ({ target: { name, value } }) => {
+    setFilterByNumericValues((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
+
+  const handleFilter = () => {
+    const { column, comparison, value } = filterByNumericValues;
+    let filteredOptions = [];
+
+    if (comparison === 'maior que') {
+      filteredOptions = filteredPlanets.filter((item) => +item[column] > +value);
+    }
+    if (comparison === 'menor que') {
+      filteredOptions = filteredPlanets.filter((item) => +item[column] < +value);
+    }
+    if (comparison === 'igual a') {
+      filteredOptions = filteredPlanets.filter((item) => +item[column] === +value);
+    }
+    setFilteredPlanets(filteredOptions);
   };
 
   const contextValue = {
     planets,
     getPlanets,
-    search,
     handleSearch,
-    filtered,
+    filteredPlanets,
+    filterByNumericValues,
+    handleChange,
+    handleFilter,
   };
 
   return (
