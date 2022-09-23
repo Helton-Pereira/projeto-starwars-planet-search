@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import StarWarsContext from './StarWarsContext';
 import fetchPlanets from '../services';
 import columnOptions from '../helpers/columnOptions';
+import { act } from 'react-dom/test-utils';
 
 function SWProvider({ children }) {
   const [planets, setPlanets] = useState([]);
@@ -69,6 +70,7 @@ function SWProvider({ children }) {
     if (comparison === 'igual a') {
       filter = filteredPlanets.filter((item) => +item[column] === +value);
     }
+    setValue(0);
     setFilteredPlanets(filter);
     handleRepetitionOfColumn();
   };
