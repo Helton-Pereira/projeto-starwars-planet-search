@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import StarWarsContext from '../context/StarWarsContext';
+import tableHeaders from '../helpers/tableHeader';
 
 function Table() {
   const { getPlanets, filteredPlanets } = useContext(StarWarsContext);
@@ -13,19 +14,13 @@ function Table() {
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Rotation period</th>
-          <th>Orbital period</th>
-          <th>Diameter</th>
-          <th>Climate</th>
-          <th>Gravity</th>
-          <th>Terrain</th>
-          <th>Surface Water</th>
-          <th>Population</th>
-          <th>Films</th>
-          <th>Created</th>
-          <th>Edited</th>
-          <th>URL</th>
+          {
+            tableHeaders.map((header) => (
+
+              <th key={ header }>{ header }</th>
+
+            ))
+          }
         </tr>
       </thead>
       <tbody>

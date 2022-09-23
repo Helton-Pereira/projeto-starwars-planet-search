@@ -2,29 +2,28 @@ import React, { useContext } from 'react';
 import StarWarsContext from '../context/StarWarsContext';
 
 function FilterNumbers() {
-  const { filterByNumericValues, handleChange,
-    handleFilter } = useContext(StarWarsContext);
-  const { column, comparison, value } = filterByNumericValues;
+  const { handleFilter, filteredOptions, handleChangeColumn, handleChangeComparison,
+    handleChangeValue, column, comparison, value } = useContext(StarWarsContext);
 
   return (
     <div>
       <select
         name="column"
         value={ column }
-        onChange={ handleChange }
+        onChange={ handleChangeColumn }
         data-testid="column-filter"
       >
-        <option>population</option>
-        <option>orbital_period</option>
-        <option>diameter</option>
-        <option>rotation_period</option>
-        <option>surface_water</option>
+        {
+          filteredOptions.map((option) => (
+            <option key={ option }>{ option }</option>
+          ))
+        }
       </select>
 
       <select
         name="comparison"
         value={ comparison }
-        onChange={ handleChange }
+        onChange={ handleChangeComparison }
         data-testid="comparison-filter"
       >
         <option>maior que</option>
@@ -32,13 +31,17 @@ function FilterNumbers() {
         <option>igual a</option>
       </select>
 
-      <input
-        name="value"
-        value={ value }
-        type="number"
-        onChange={ handleChange }
-        data-testid="value-filter"
-      />
+      <label htmlFor="value">
+        Digite um valor
+        <input
+          name="value"
+          value={ value }
+          type="number"
+          onChange={ handleChangeValue }
+          id="value"
+          data-testid="value-filter"
+        />
+      </label>
 
       <button
         type="button"

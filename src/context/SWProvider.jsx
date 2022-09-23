@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import StarWarsContext from './StarWarsContext';
 import fetchPlanets from '../services';
+import columnOptions from '../helpers/columnOptions';
 
 function SWProvider({ children }) {
   const [planets, setPlanets] = useState([]);
   const [filteredPlanets, setFilteredPlanets] = useState([]);
-  const [filterByNumericValues, setFilterByNumericValues] = useState(
-    { column: 'population', comparison: 'maior que', value: 0 },
-  );
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState(0);
+  // const [filterByNumericValues, setFilterByNumericValues] = useState([]);
+
+  const [options, setOptions] = useState(columnOptions);
+  const [filteredOptions, setFilteredOptions] = useState(options);
 
   const getPlanets = async () => {
     try {
@@ -20,34 +25,52 @@ function SWProvider({ children }) {
     }
   };
 
-  const handleSearch = ({ target: { value } }) => {
+  const handleSearch = ({ target }) => {
     const filteredResults = planets.filter(
-      (planet) => planet.name.toLowerCase().includes(value.toLowerCase()),
+      (planet) => planet.name.toLowerCase().includes(target.value.toLowerCase()),
     );
     setFilteredPlanets(filteredResults);
   };
 
-  const handleChange = ({ target: { name, value } }) => {
-    setFilterByNumericValues((prevFilter) => ({
-      ...prevFilter,
-      [name]: value,
-    }));
+  const handleChangeColumn = ({ target }) => {
+    setColumn(target.value);
+  };
+
+  const handleChangeComparison = ({ target }) => {
+    setComparison(target.value);
+  };
+
+  const handleChangeValue = ({ target }) => {
+    setValue(target.value);
+  };
+
+  // const handleChange = ({ target: { name, value } }) => {
+  //   setFilterByNumericValues((prevFilter) => ({
+  //     ...prevFilter,
+  //     [name]: value,
+  //   }));
+  // };
+
+  const handleRepetitionOfColumn = () => {
+    const filterColumn = options.filter((item) => item !== column);
+    setFilteredOptions(filterColumn);
+    setColumn(filterColumn[0]);
   };
 
   const handleFilter = () => {
-    const { column, comparison, value } = filterByNumericValues;
-    let filteredOptions = [];
+    let filter = [];
 
     if (comparison === 'maior que') {
-      filteredOptions = filteredPlanets.filter((item) => +item[column] > +value);
+      filter = filteredPlanets.filter((item) => +item[column] > +value);
     }
     if (comparison === 'menor que') {
-      filteredOptions = filteredPlanets.filter((item) => +item[column] < +value);
+      filter = filteredPlanets.filter((item) => +item[column] < +value);
     }
     if (comparison === 'igual a') {
-      filteredOptions = filteredPlanets.filter((item) => +item[column] === +value);
+      filter = filteredPlanets.filter((item) => +item[column] === +value);
     }
-    setFilteredPlanets(filteredOptions);
+    setFilteredPlanets(filter);
+    handleRepetitionOfColumn();
   };
 
   const contextValue = {
@@ -55,9 +78,16 @@ function SWProvider({ children }) {
     getPlanets,
     handleSearch,
     filteredPlanets,
-    filterByNumericValues,
-    handleChange,
+    // filterByNumericValues,
     handleFilter,
+    filteredOptions,
+    setOptions,
+    column,
+    comparison,
+    value,
+    handleChangeColumn,
+    handleChangeComparison,
+    handleChangeValue,
   };
 
   return (
