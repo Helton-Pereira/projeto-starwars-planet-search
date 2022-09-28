@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import StarWarsContext from './StarWarsContext';
 import fetchPlanets from '../services';
 import columnOptions from '../helpers/columnOptions';
-import { act } from 'react-dom/test-utils';
 
 function SWProvider({ children }) {
   const [planets, setPlanets] = useState([]);
@@ -11,19 +10,15 @@ function SWProvider({ children }) {
   const [column, setColumn] = useState('population');
   const [comparison, setComparison] = useState('maior que');
   const [value, setValue] = useState(0);
-  // const [filterByNumericValues, setFilterByNumericValues] = useState([]);
+  const [filterByNumericValues, setFilterByNumericValues] = useState([]);
 
   const [options, setOptions] = useState(columnOptions);
   const [filteredOptions, setFilteredOptions] = useState(options);
 
   const getPlanets = async () => {
-    try {
-      const apiPlanets = await fetchPlanets();
-      setPlanets(apiPlanets);
-      setFilteredPlanets(apiPlanets);
-    } catch (error) {
-      return (error.message);
-    }
+    const apiPlanets = await fetchPlanets();
+    setPlanets(apiPlanets);
+    setFilteredPlanets(apiPlanets);
   };
 
   const handleSearch = ({ target }) => {
@@ -44,13 +39,6 @@ function SWProvider({ children }) {
   const handleChangeValue = ({ target }) => {
     setValue(target.value);
   };
-
-  // const handleChange = ({ target: { name, value } }) => {
-  //   setFilterByNumericValues((prevFilter) => ({
-  //     ...prevFilter,
-  //     [name]: value,
-  //   }));
-  // };
 
   const handleRepetitionOfColumn = () => {
     const filterColumn = options.filter((item) => item !== column);
@@ -73,6 +61,19 @@ function SWProvider({ children }) {
     setValue(0);
     setFilteredPlanets(filter);
     handleRepetitionOfColumn();
+    setFilterByNumericValues([
+      ...filterByNumericValues,
+      {
+        column,
+        comparison,
+        value,
+      }]);
+  };
+
+  const removeFilters = () => {
+    setOptions(columnOptions);
+    setFilteredPlanets(planets);
+    setFilterByNumericValues([]);
   };
 
   const contextValue = {
@@ -80,7 +81,7 @@ function SWProvider({ children }) {
     getPlanets,
     handleSearch,
     filteredPlanets,
-    // filterByNumericValues,
+    filterByNumericValues,
     handleFilter,
     filteredOptions,
     setOptions,
@@ -90,6 +91,7 @@ function SWProvider({ children }) {
     handleChangeColumn,
     handleChangeComparison,
     handleChangeValue,
+    removeFilters,
   };
 
   return (
